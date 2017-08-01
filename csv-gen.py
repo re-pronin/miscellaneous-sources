@@ -3,8 +3,12 @@ import uuid
 import csv
 import os
 outfile = 'bigboy.csv'
-outsize = 1024 # MB
+outsize = 10 # MB
+chunksize = 1000
 with open(outfile, 'ab') as csvfile:
-    wtr = csv.writer(csvfile)
     while (os.path.getsize(outfile)//1024**2) < outsize:
-        wtr.writerow(['%s,%.6f,%.6f,%i' % (uuid.uuid4(), np.random.random()*50, np.random.random()*50, np.random.randint(1000))])
+        data = [[uuid.uuid4() for i in range(chunksize)],
+                np.random.random(chunksize)*50,
+                np.random.random(chunksize)*50,
+                np.random.randint(1000, size=(chunksize,))]
+        csvfile.writelines(['%s,%.6f,%.6f,%i\n' % row for row in zip(*data)])
